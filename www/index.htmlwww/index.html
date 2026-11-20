@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>MRCASCADAS IPTV</title>
+<style>
+:root{--gold:#d6b45b;--gold2:#f4df9b;--gold3:#a77c25;--bg:#050505;--panel:#141414;--muted:#a9a396;--line:#4d3f1d}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at top,#262012 0,#070707 52%);color:#f7f2e5;font:16px/1.5 "Trebuchet MS",Arial,sans-serif;min-height:100vh}
+.serif{font-family:Georgia,"Times New Roman",serif}
+
+/* ---------- PRESENTACIÓN ---------- */
+#intro{position:fixed;inset:0;z-index:50;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;transition:opacity .9s ease,transform .9s ease}
+#intro.out{opacity:0;transform:scale(1.06);pointer-events:none}
+#fall{position:absolute;inset:0;width:100%;height:100%}
+.introbox{position:relative;z-index:2;padding:0 6vw}
+.introbox .logo{font-family:Georgia,serif;font-weight:700;font-size:clamp(34px,9vw,92px);letter-spacing:.14em;line-height:1.05;margin:0;background:linear-gradient(100deg,#8a6420 0%,#f4df9b 40%,#fff6d0 50%,#d6b45b 62%,#8a6420 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;animation:logoIn 1.6s .9s forwards,shine 4s 2.4s linear infinite}
+.introbox .tag{color:#cdb877;letter-spacing:.42em;font-size:clamp(11px,2.3vw,16px);margin:18px 0 0;opacity:0;animation:fade 1.2s 2.1s forwards}
+.introbox .go{margin-top:38px;opacity:0;animation:fade 1s 3s forwards}
+.skip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;z-index:3;background:transparent;color:#cdb877;border:1px solid #5a4824;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:400}
+@keyframes logoIn{from{opacity:0;transform:translateY(-24px);filter:blur(10px);letter-spacing:.4em}to{opacity:1;transform:none;filter:none;letter-spacing:.14em}}
+@keyframes shine{to{background-position:-250% 0}}
+@keyframes fade{to{opacity:1}}
+
+/* ---------- APP ---------- */
+header{padding:calc(18px + env(safe-area-inset-top,0px)) 5vw 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{font-family:Georgia,serif;font-weight:700;letter-spacing:.14em;color:var(--gold2);font-size:clamp(19px,4vw,28px)}
+.pill{border:1px solid var(--gold);color:var(--gold2);border-radius:30px;padding:6px 13px;font-size:12px}
+main{max-width:1100px;margin:auto;padding:0 5vw 60px}
+.hero{position:relative;overflow:hidden;margin:22px 0 0;border:1px solid var(--line);border-radius:22px;padding:clamp(26px,6vw,56px);background:linear-gradient(160deg,#1a160c,#0a0a0a)}
+.hero:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(214,180,91,.07) 22px 23px,transparent 23px 49px,rgba(244,223,155,.05) 49px 50px);background-size:100% 200%;animation:flow 7s linear infinite;mask-image:linear-gradient(#000,transparent 85%);-webkit-mask-image:linear-gradient(#000,transparent 85%)}
+@keyframes flow{from{background-position:0 0}to{background-position:0 200%}}
+.hero>*{position:relative}
+.hero h1{font-family:Georgia,serif;font-size:clamp(28px,6vw,52px);line-height:1.1;margin:0 0 10px;color:var(--gold2)}
+.hero p{color:#c9c4b6;margin:0;max-width:52ch}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 0}
+button,.btn{background:linear-gradient(135deg,#f0d98d,#a77c25);color:#15110a;border:0;border-radius:12px;padding:14px 22px;font-weight:800;cursor:pointer;font-size:15px;font-family:inherit;transition:transform .15s}
+button:active{transform:scale(.97)}
+button.secondary{background:#221f17;color:var(--gold2);border:1px solid #8f7133}
+button:focus-visible,input:focus-visible{outline:3px solid #fff1b8;outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:22px 0}
+.card{background:linear-gradient(145deg,#1a1a1a,#0f0f0f);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h3{color:var(--gold2);margin:0 0 6px;font-size:18px}
+.muted{color:var(--muted);font-size:14px;line-height:1.5}
+.cat{cursor:pointer;text-align:left;width:100%;display:block;color:inherit;background:linear-gradient(145deg,#1a1a1a,#0f0f0f);border:1px solid var(--line);font-weight:400;padding:20px}
+.cat:focus-visible,.cat:hover{border-color:var(--gold)}
+.cat h3{color:var(--gold2);margin:0 0 6px;font-size:18px}
+.section-title{font-family:Georgia,serif;color:var(--gold2);font-size:24px;margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.count{font:700 12px Arial;background:var(--gold);color:#15110a;border-radius:20px;padding:2px 9px}
+label{display:block;color:#e5d6a9;font-size:13px;margin:14px 0 6px}
+input[type=text],input[type=password],input[type=url]{width:100%;background:#090909;border:1px solid #62512a;border-radius:10px;padding:13px;color:#fff;font-size:16px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.formbox{background:#121212;border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:14px;animation:open .25s ease}
+@keyframes open{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.hidden{display:none!important}
+.listitem{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #2e2819;padding:14px 0}
+.listitem:last-child{border:0}
+.listitem strong{color:#f2dfaa}
+.smallbtn{padding:9px 13px;font-size:13px}
+#status{color:#d9c17c;min-height:22px;margin-top:10px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#1d1810;border:1px solid var(--gold);color:var(--gold2);padding:12px 20px;border-radius:30px;opacity:0;transition:.3s;z-index:60;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+footer{border-top:1px solid #3a2f17;padding:22px 5vw;color:#85806f;text-align:center;font-size:12px}
+@media(max-width:560px){.actions button{width:100%}.listitem{align-items:flex-start;flex-direction:column}}
+@media(min-width:1200px){body{font-size:19px}.card h3,.cat h3{font-size:22px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<div id="intro" role="dialog" aria-label="Presentación de MRCASCADAS IPTV">
+<canvas id="fall"></canvas>
+<button class="secondary skip" id="skip">Omitir</button>
+<div class="introbox">
+<h1 class="logo">MRCASCADAS</h1>
+<div class="logo" style="font-size:clamp(18px,4.5vw,40px);letter-spacing:.7em;margin-top:6px;animation-delay:1.3s,2.8s">IPTV</div>
+<p class="tag">TU TELEVISIÓN, A TU MANERA</p>
+<button class="go" id="enter">ENTRAR</button>
+</div>
+</div>
+
+<div id="app">
+<header><div class="brand">MRCASCADAS IPTV</div><div class="pill">Edición cascada</div></header>
+<main>
+<div class="hero">
+<h1>Tu televisión, a tu manera.</h1>
+<p>Guarda tus listas M3U y tus accesos Xtream Codes en un solo lugar, listo para tu celular y tu Google TV.</p>
+<div class="actions">
+<button id="addM3u">＋ Agregar lista M3U</button>
+<button id="addXt">＋ Agregar Xtream Codes</button>
+<button class="secondary" id="goSaved">Mis listas</button>
+</div>
+</div>
+
+<div class="grid">
+<button class="cat" data-cat="TV en vivo"><h3>▣ TV en vivo</h3><div class="muted">Tus canales, organizados al importar una lista.</div></button>
+<button class="cat" data-cat="Películas"><h3>▶ Películas</h3><div class="muted">Las categorías VOD que incluya tu servicio.</div></button>
+<button class="cat" data-cat="Series"><h3>▤ Series</h3><div class="muted">Temporadas y episodios de tu servicio.</div></button>
+</div>
+
+<section id="formArea" class="hidden">
+<div class="section-title" id="formTitle">Agregar lista</div>
+<div class="formbox">
+<label for="listName">Nombre de la lista</label>
+<input type="text" id="listName" placeholder="Ej. Mi televisión" maxlength="40">
+<div id="m3uFields">
+<label for="m3uUrl">Dirección de la lista M3U</label>
+<input type="url" id="m3uUrl" placeholder="https://servidor/lista.m3u" inputmode="url" autocomplete="off">
+</div>
+<div id="xtFields" class="hidden">
+<label for="server">Dirección del servidor</label>
+<input type="url" id="server" placeholder="https://servidor:puerto" inputmode="url" autocomplete="off">
+<div class="row">
+<div><label for="username">Usuario</label><input type="text" id="username" autocomplete="off"></div>
+<div><label for="password">Contraseña</label><input type="password" id="password" autocomplete="new-password"></div>
+</div>
+<label style="display:flex;align-items:center;gap:9px"><input id="showPass" type="checkbox" style="width:20px;height:20px"> Mostrar contraseña</label>
+</div>
+<div class="actions"><button id="save">Guardar lista</button><button class="secondary" id="cancel">Cancelar</button></div>
+<div id="status" aria-live="polite"></div>
+</div>
+</section>
+
+<section id="saved">
+<div class="section-title">Mis listas <span class="count" id="count">0</span></div>
+<div class="card"><div id="listArea" class="muted"></div></div>
+</section>
+
+<section>
+<div class="card"><h3>Privacidad</h3>
+<p class="muted" style="margin:0">Tus listas se guardan solo en este dispositivo. No compartas tus enlaces, usuario ni contraseña. Esta versión no incluye canales, suscripciones ni contenido.</p></div>
+</section>
+</main>
+<footer>MRCASCADAS IPTV · Usa únicamente listas y servicios que tengas autorización para utilizar.</footer>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Cascada dorada (presentación) ---------- */
+var cv=$('fall'),ctx=cv.getContext('2d'),W,H,drops=[],raf,running=true,mist=0;
+function size(){var d=Math.min(window.devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#050505';ctx.fillRect(0,0,W,H)}
+function spawn(){
+ var band=W*(.34+Math.min(.2,mist/9000)); // la cascada se ensancha
+ var x=W/2+(Math.random()-.5)*band*(Math.random()<.2?1.6:1);
+ drops.push({x:x,y:-20,v:3+Math.random()*5,l:30+Math.random()*90,a:.25+Math.random()*.6,w:.6+Math.random()*1.8});
+}
+function frame(){
+ if(!running)return;
+ mist++;
+ ctx.globalCompositeOperation='source-over';
+ ctx.fillStyle='rgba(5,5,5,.2)';ctx.fillRect(0,0,W,H);
+ ctx.globalCompositeOperation='lighter';
+ var n=Math.min(14,2+Math.floor(mist/40));
+ for(var i=0;i<n;i++)spawn();
+ var floor=H*.8;
+ for(i=drops.length-1;i>=0;i--){
+  var d=drops[i];d.y+=d.v;
+  var g=ctx.createLinearGradient(0,d.y-d.l,0,d.y);
+  g.addColorStop(0,'rgba(214,180,91,0)');g.addColorStop(1,'rgba(255,240,190,'+d.a+')');
+  ctx.strokeStyle=g;ctx.lineWidth=d.w;ctx.beginPath();ctx.moveTo(d.x,d.y-d.l);ctx.lineTo(d.x,d.y);ctx.stroke();
+  if(d.y>floor){
+   if(Math.random()<.35){ctx.fillStyle='rgba(244,223,155,'+(d.a*.5)+')';ctx.beginPath();ctx.arc(d.x+(Math.random()-.5)*40,floor-Math.random()*14,Math.random()*2+.5,0,6.3);ctx.fill()}
+   drops.splice(i,1);
+  }
+ }
+ var m=ctx.createRadialGradient(W/2,floor,0,W/2,floor,W*.42);
+ var p=.14+Math.sin(mist/30)*.04;
+ m.addColorStop(0,'rgba(244,223,155,'+p+')');m.addColorStop(1,'rgba(214,180,91,0)');
+ ctx.fillStyle=m;ctx.fillRect(0,floor-W*.42,W,W*.6);
+ raf=requestAnimationFrame(frame);
+}
+size();window.addEventListener('resize',size);
+if(reduce){var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#050505');g.addColorStop(1,'#3a2c0e');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}else{frame()}
+
+var canEnter=false,closed=false;
+setTimeout(function(){canEnter=true},reduce?200:3000);
+function closeIntro(){
+ if(closed)return;closed=true;
+ $('intro').classList.add('out');
+ setTimeout(function(){running=false;cancelAnimationFrame(raf);$('intro').remove();$('addM3u').focus()},900);
+}
+$('enter').onclick=closeIntro;
+$('skip').onclick=closeIntro;
+$('intro').addEventListener('click',function(e){if(canEnter&&e.target.tagName!=='BUTTON')closeIntro()});
+document.addEventListener('keydown',function(e){if(!closed&&(e.key==='Enter'||e.key===' '||e.key==='Escape')){e.preventDefault();closeIntro()}});
+$('enter').focus({preventScroll:true});
+
+/* ---------- Listas ---------- */
+var kind='m3u',items=[];
+try{items=JSON.parse(localStorage.getItem('mrcascadas_lists')||'[]')}catch(e){items=[]}
+function persist(){try{localStorage.setItem('mrcascadas_lists',JSON.stringify(items))}catch(e){toast('No se pudo guardar en este dispositivo.')}}
+function toast(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toast.k);toast.k=setTimeout(function(){t.classList.remove('show')},2600)}
+function showForm(k){
+ kind=k;$('formArea').classList.remove('hidden');
+ $('m3uFields').classList.toggle('hidden',k!=='m3u');$('xtFields').classList.toggle('hidden',k!=='xtream');
+ $('formTitle').textContent=k==='m3u'?'Agregar lista M3U':'Agregar Xtream Codes';
+ $('status').textContent='';$('listName').focus();$('formArea').scrollIntoView({behavior:reduce?'auto':'smooth'});
+}
+function hideForm(){$('formArea').classList.add('hidden')}
+function say(s){$('status').textContent=s}
+function okUrl(u){return /^https?:\/\/[^\s]+\.[^\s]+/i.test(u)||/^https?:\/\/(localhost|\d{1,3}(\.\d{1,3}){3})/i.test(u)}
+function save(){
+ var name=$('listName').value.trim();
+ if(!name)return say('Escribe un nombre para la lista.');
+ var e={id:Date.now(),name:name,type:kind};
+ if(kind==='m3u'){
+  e.url=$('m3uUrl').value.trim();
+  if(!okUrl(e.url))return say('Escribe una dirección que empiece con http:// o https://');
+ }else{
+  e.server=$('server').value.trim();e.username=$('username').value.trim();e.password=$('password').value;
+  if(!okUrl(e.server))return say('La dirección del servidor debe empezar con http:// o https://');
+  if(!e.username||!e.password)return say('Completa usuario y contraseña.');
+ }
+ items.push(e);persist();render();
+ ['listName','m3uUrl','server','username','password'].forEach(function(i){$(i).value=''});
+ hideForm();toast('Lista guardada');$('saved').scrollIntoView({behavior:reduce?'auto':'smooth'});
+}
+function remove(id){
+ var x=items.filter(function(i){return i.id===id})[0];
+ if(x&&confirm('¿Eliminar la lista "'+x.name+'"?')){items=items.filter(function(i){return i.id!==id});persist();render();toast('Lista eliminada')}
+}
+function render(){
+ var a=$('listArea');$('count').textContent=items.length;a.textContent='';
+ if(!items.length){a.textContent='Aún no tienes listas. Toca "Agregar lista M3U" o "Agregar Xtream Codes" para empezar.';return}
+ items.forEach(function(x){
+  var d=document.createElement('div');d.className='listitem';
+  var info=document.createElement('div');
+  var b=document.createElement('strong');b.textContent=x.name;
+  var s=document.createElement('div');s.className='muted';s.textContent=x.type==='m3u'?'Lista M3U':'Xtream Codes';
+  info.append(b,s);
+  var del=document.createElement('button');del.className='secondary smallbtn';del.textContent='Eliminar';del.onclick=function(){remove(x.id)};
+  d.append(info,del);a.append(d);
+ });
+}
+$('addM3u').onclick=function(){showForm('m3u')};
+$('addXt').onclick=function(){showForm('xtream')};
+$('goSaved').onclick=function(){$('saved').scrollIntoView({behavior:reduce?'auto':'smooth'})};
+$('save').onclick=save;$('cancel').onclick=hideForm;
+$('showPass').onchange=function(){$('password').type=this.checked?'text':'password'};
+document.querySelectorAll('.cat').forEach(function(c){c.onclick=function(){toast(items.length?c.dataset.cat+': pronto podrás verlo aquí.':'Primero agrega una lista para ver '+c.dataset.cat+'.')}});
+render();
+
+/* ---------- Control remoto (Google TV): flechas para moverse ---------- */
+document.addEventListener('keydown',function(e){
+ if(!closed)return;
+ var dir={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];if(!dir)return;
+ var t=document.activeElement;if(t&&(t.tagName==='INPUT')&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))return;
+ var all=[].slice.call(document.querySelectorAll('button,input')).filter(function(n){return n.offsetParent!==null});
+ var cur=t&&all.indexOf(t)>-1?t:null;if(!cur){all[0]&&all[0].focus();e.preventDefault();return}
+ var r=cur.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,best=null,bs=1e9;
+ all.forEach(function(n){if(n===cur)return;var q=n.getBoundingClientRect(),dx=q.left+q.width/2-cx,dy=q.top+q.height/2-cy;
+  var along=dx*dir[0]+dy*dir[1];if(along<=4)return;var across=Math.abs(dir[0]?dy:dx);var sc=along+across*2.2;if(sc<bs){bs=sc;best=n}});
+ if(best){best.focus();best.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});e.preventDefault()}
+});
+})();
+</script>
+</body>
+                                                           </html>
