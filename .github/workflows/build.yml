@@ -1,3 +1,4 @@
+
 name: Compilar APK
 on:
   workflow_dispatch:
@@ -6,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Arreglar animaciones
+        run: |
+          sed -i '/^[[:space:]]*var reduce=false;[[:space:]]*$/d' www/index.html
+          sed -i "s/matchMedia('(prefers-reduced-motion: reduce)').matches/false/" www/index.html
       - uses: actions/setup-node@v4
         with:
           node-version: 20
