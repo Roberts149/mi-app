@@ -66,7 +66,11 @@ input[type=text],input[type=password],input[type=url]{width:100%;background:#090
 footer{border-top:1px solid #3a2f17;padding:22px 5vw;color:#85806f;text-align:center;font-size:12px}
 @media(max-width:560px){.actions button{width:100%}.listitem{align-items:flex-start;flex-direction:column}}
 @media(min-width:1200px){body{font-size:19px}.card h3,.cat h3{font-size:22px}}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}
+
+
+
+
+                                        
 </style>
 </head>
 <body>
@@ -137,7 +141,7 @@ footer{border-top:1px solid #3a2f17;padding:22px 5vw;color:#85806f;text-align:ce
 <footer>MRCASCADAS IPTV · Usa únicamente listas y servicios que tengas autorización para utilizar.</footer>
 </div>
 <div id="toast" role="status"></div>
-
+var reduce=false;
 <script>
 (function(){
 var $=function(id){return document.getElementById(id)};
