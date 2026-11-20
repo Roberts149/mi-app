@@ -11,6 +11,28 @@ jobs:
         run: |
           sed -i '/^[[:space:]]*var reduce=false;[[:space:]]*$/d' www/index.html
           sed -i "s/matchMedia('(prefers-reduced-motion: reduce)').matches/false/" www/index.html
+      - name: Ajustar presentacion
+        run: |
+          python3 - <<'PY'
+          p='www/index.html'
+          s=open(p,encoding='utf-8').read()
+          reps=[
+          ("font-size:clamp(34px,9vw,92px);letter-spacing:.14em","font-size:clamp(26px,7.2vw,92px);letter-spacing:.08em"),
+          ("letter-spacing:.4em}to{opacity:1;transform:none;filter:none;letter-spacing:.14em}","letter-spacing:.25em}to{opacity:1;transform:none;filter:none;letter-spacing:.08em}"),
+          ("rgba(255,240,190,'+d.a+')","rgba(214,170,70,'+(d.a*.55)+')"),
+          ("Math.min(14,2+Math.floor(mist/40))","Math.min(6,2+Math.floor(mist/70))"),
+          ("W*(.34+Math.min(.2,mist/9000))","W*(.28+Math.min(.1,mist/12000))"),
+          ("w:.6+Math.random()*1.8","w:.5+Math.random()*1.0"),
+          ("fillStyle='rgba(5,5,5,.2)'","fillStyle='rgba(5,5,5,.3)'"),
+          ]
+          for a,b in reps:
+              if a in s:
+                  s=s.replace(a,b)
+                  print('OK',a[:40])
+              else:
+                  print('FALTA',a[:40])
+          open(p,'w',encoding='utf-8').write(s)
+          PY
       - uses: actions/setup-node@v4
         with:
           node-version: 20
