@@ -1,4 +1,3 @@
-
 name: Compilar APK
 on:
   workflow_dispatch:
@@ -9,32 +8,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Arreglar animaciones
-        run: |
-          sed -i '/^[[:space:]]*var reduce=false;[[:space:]]*$/d' www/index.html
-          sed -i "s/matchMedia('(prefers-reduced-motion: reduce)').matches/false/" www/index.html
-      - name: Ajustar presentacion
-        run: |
-          python3 - <<'PY'
-          p='www/index.html'
-          s=open(p,encoding='utf-8').read()
-          reps=[
-          ("font-size:clamp(34px,9vw,92px);letter-spacing:.14em","font-size:clamp(26px,7.2vw,92px);letter-spacing:.08em"),
-          ("letter-spacing:.4em}to{opacity:1;transform:none;filter:none;letter-spacing:.14em}","letter-spacing:.25em}to{opacity:1;transform:none;filter:none;letter-spacing:.08em}"),
-          ("rgba(255,240,190,'+d.a+')","rgba(214,170,70,'+(d.a*.55)+')"),
-          ("Math.min(14,2+Math.floor(mist/40))","Math.min(6,2+Math.floor(mist/70))"),
-          ("W*(.34+Math.min(.2,mist/9000))","W*(.28+Math.min(.1,mist/12000))"),
-          ("w:.6+Math.random()*1.8","w:.5+Math.random()*1.0"),
-          ("fillStyle='rgba(5,5,5,.2)'","fillStyle='rgba(5,5,5,.3)'"),
-          ]
-          for a,b in reps:
-              if a in s:
-                  s=s.replace(a,b)
-                  print('OK',a[:40])
-              else:
-                  print('FALTA',a[:40])
-          open(p,'w',encoding='utf-8').write(s)
-          PY
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -44,11 +17,49 @@ jobs:
           java-version: 17
       - run: npm install
       - run: npx cap add android
-      - name: Preparar para Google TV
+      - name: Preparar para Google TV y http
         run: |
           M=android/app/src/main/AndroidManifest.xml
-          sed -i 's#<application#<uses-feature android:name="android.software.leanback" android:required="false" />\n    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />\n    <application#' $M
+          sed -i 's#<application#<uses-feature android:name="android.software.leanback" android:required="false" />\n    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />\n    <application android:usesCleartextTraffic="true"#' $M
           sed -i 's#<category android:name="android.intent.category.LAUNCHER" />#<category android:name="android.intent.category.LAUNCHER" />\n                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />#' $M
+      - name: Icono, banner y pantalla de inicio
+        continue-on-error: true
+        run: |
+          pip install pillow
+          python3 - <<'PY'
+          import os,glob,random
+          from PIL import Image,ImageDraw,ImageFont
+          R='android/app/src/main/res'
+          def F(s):
+              for p in ['/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf','/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf']:
+                  if os.path.exists(p): return ImageFont.truetype(p,s)
+              return ImageFont.load_default()
+          def art(S,bg=True):
+              im=Image.new('RGBA',(S,S),(5,5,5,255) if bg else (0,0,0,0)); d=ImageDraw.Draw(im); r=random.Random(7); c=S/2
+              for i in range(15):
+                  x=c+(i-7)*S*0.034; t=S*0.16+r.random()*S*0.05; b=S*(0.50+r.random()*0.16)
+                  d.line([(x,t),(x,b)],fill=(214,170,70,int(90+r.random()*140)),width=max(1,int(S*0.012)))
+              f=F(int(S*0.40)); w=d.textlength('M',font=f); d.text((c-w/2,S*0.40),'M',font=f,fill=(244,223,155,255))
+              return im
+          def circ(im):
+              m=Image.new('L',im.size,0); ImageDraw.Draw(m).ellipse([0,0,im.size[0]-1,im.size[1]-1],fill=255); o=im.copy(); o.putalpha(m); return o
+          for n,(a,b) in {'mdpi':(48,108),'hdpi':(72,162),'xhdpi':(96,216),'xxhdpi':(144,324),'xxxhdpi':(192,432)}.items():
+              d=R+'/mipmap-'+n
+              if not os.path.isdir(d): continue
+              art(a).convert('RGB').save(d+'/ic_launcher.png'); circ(art(a)).save(d+'/ic_launcher_round.png')
+              fg=Image.new('RGBA',(b,b),(0,0,0,0)); k=int(b*0.62); fg.paste(art(k,False),((b-k)//2,(b-k)//2)); fg.save(d+'/ic_launcher_foreground.png')
+          bgx=R+'/values/ic_launcher_background.xml'
+          open(bgx,'w').write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#050505</color>\n</resources>\n')
+          ban=Image.new('RGB',(320,180),(5,5,5)); d=ImageDraw.Draw(ban); r=random.Random(3)
+          for i in range(30):
+              x=40+i*8; d.line([(x,0),(x,60+r.random()*60)],fill=(214,170,70),width=1)
+          f=F(30); t='MRCASCADAS'; d.text(((320-d.textlength(t,font=f))/2,92),t,font=f,fill=(244,223,155)); f=F(20); t='IPTV'; d.text(((320-d.textlength(t,font=f))/2,134),t,font=f,fill=(214,170,70))
+          os.makedirs(R+'/drawable',exist_ok=True); ban.save(R+'/drawable/banner.png')
+          for p in glob.glob(R+'/drawable*/splash.png'):
+              w,h=Image.open(p).size; s=Image.new('RGB',(w,h),(5,5,5)); d=ImageDraw.Draw(s); f=F(max(14,w//12)); t='MRCASCADAS IPTV'; d.text(((w-d.textlength(t,font=f))/2,h/2-w//24),t,font=f,fill=(244,223,155)); s.save(p)
+          m='android/app/src/main/AndroidManifest.xml'; x=open(m).read()
+          if 'android:banner' not in x: open(m,'w').write(x.replace('<application','<application android:banner="@drawable/banner"',1))
+          PY
       - run: npx cap sync android
       - name: Compilar
         run: |
