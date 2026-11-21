@@ -17,11 +17,11 @@ body{background:radial-gradient(ellipse at top,#262012 0,#070707 52%);color:#f7f
 #intro.out{opacity:0;transform:scale(1.06);pointer-events:none}
 #fall{position:absolute;inset:0;width:100%;height:100%}
 .introbox{position:relative;z-index:2;padding:0 6vw}
-.introbox .logo{font-family:Georgia,serif;font-weight:700;font-size:clamp(34px,9vw,92px);letter-spacing:.14em;line-height:1.05;margin:0;background:linear-gradient(100deg,#8a6420 0%,#f4df9b 40%,#fff6d0 50%,#d6b45b 62%,#8a6420 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;animation:logoIn 1.6s .9s forwards,shine 4s 2.4s linear infinite}
+.introbox .logo{font-family:Georgia,serif;font-weight:700;font-size:clamp(26px,7.2vw,92px);letter-spacing:.08em;line-height:1.05;margin:0;background:linear-gradient(100deg,#8a6420 0%,#f4df9b 40%,#fff6d0 50%,#d6b45b 62%,#8a6420 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;animation:logoIn 1.6s .9s forwards,shine 4s 2.4s linear infinite}
 .introbox .tag{color:#cdb877;letter-spacing:.42em;font-size:clamp(11px,2.3vw,16px);margin:18px 0 0;opacity:0;animation:fade 1.2s 2.1s forwards}
 .introbox .go{margin-top:38px;opacity:0;animation:fade 1s 3s forwards}
 .skip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;z-index:3;background:transparent;color:#cdb877;border:1px solid #5a4824;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:400}
-@keyframes logoIn{from{opacity:0;transform:translateY(-24px);filter:blur(10px);letter-spacing:.4em}to{opacity:1;transform:none;filter:none;letter-spacing:.14em}}
+@keyframes logoIn{from{opacity:0;transform:translateY(-24px);filter:blur(10px);letter-spacing:.25em}to{opacity:1;transform:none;filter:none;letter-spacing:.08em}}
 @keyframes shine{to{background-position:-250% 0}}
 @keyframes fade{to{opacity:1}}
 
@@ -71,6 +71,12 @@ footer{border-top:1px solid #3a2f17;padding:22px 5vw;color:#85806f;text-align:ce
 
 
                                         
+
+#channelList{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:10px}
+.channelCard{background:#201d16;border:1px solid #51421f;border-radius:12px;padding:12px;min-width:0}
+.channelCard strong{display:block;color:#f4df9b;overflow-wrap:anywhere}
+.channelCard button{width:100%;margin-top:8px;padding:9px}
+#iptvVideo{display:block}
 </style>
 </head>
 <body>
@@ -133,41 +139,54 @@ footer{border-top:1px solid #3a2f17;padding:22px 5vw;color:#85806f;text-align:ce
 <div class="card"><div id="listArea" class="muted"></div></div>
 </section>
 
+<section id="iptvPlayer">
+<div class="section-title">Reproductor de canales</div>
+<div class="card">
+  <p class="muted">Carga una lista M3U desde un archivo del teléfono/USB, o intenta abrirla desde su dirección web. Si el servidor bloquea la conexión del navegador, usa el archivo M3U descargado.</p>
+  <label for="m3uFile">Abrir archivo M3U</label><input id="m3uFile" type="file" accept=".m3u,.m3u8,text/plain" style="width:100%;color:#eee;padding:10px;background:#090909;border:1px solid #62512a;border-radius:10px">
+  <div class="row"><input id="quickUrl" type="url" placeholder="https://.../lista.m3u" aria-label="Dirección M3U para cargar"><button id="quickLoad">Cargar dirección</button></div>
+  <div id="playStatus" class="muted" aria-live="polite">Todavía no hay canales cargados.</div>
+  <video id="iptvVideo" controls playsinline style="width:100%;max-height:55vh;background:#000;border-radius:12px;margin:10px 0"></video>
+  <div id="playingName" class="muted">Selecciona un canal para reproducirlo.</div>
+  <input id="channelSearch" type="text" placeholder="Buscar canal..." aria-label="Buscar canal">
+  <div id="channelCount" class="muted">0 canales</div><div id="channelList" class="grid"></div>
+</div></section>
+
 <section>
 <div class="card"><h3>Privacidad</h3>
-<p class="muted" style="margin:0">Tus listas se guardan solo en este dispositivo. No compartas tus enlaces, usuario ni contraseña. Esta versión no incluye canales, suscripciones ni contenido.</p></div>
+<p class="muted" style="margin:0">Tus listas y favoritos se guardan localmente en este dispositivo. No compartas tus enlaces, usuario ni contraseña. La reproducción depende de que tu proveedor permita el acceso y entregue streams compatibles.</p></div>
 </section>
 </main>
 <footer>MRCASCADAS IPTV · Usa únicamente listas y servicios que tengas autorización para utilizar.</footer>
 </div>
 <div id="toast" role="status"></div>
-var reduce=false;
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
 <script>
 (function(){
 var $=function(id){return document.getElementById(id)};
-var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var reduce=window.matchMedia&&false;
 
 /* ---------- Cascada dorada (presentación) ---------- */
 var cv=$('fall'),ctx=cv.getContext('2d'),W,H,drops=[],raf,running=true,mist=0;
 function size(){var d=Math.min(window.devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#050505';ctx.fillRect(0,0,W,H)}
 function spawn(){
- var band=W*(.34+Math.min(.2,mist/9000)); // la cascada se ensancha
+ var band=W*(.28+Math.min(.1,mist/12000)); // la cascada se ensancha
  var x=W/2+(Math.random()-.5)*band*(Math.random()<.2?1.6:1);
- drops.push({x:x,y:-20,v:3+Math.random()*5,l:30+Math.random()*90,a:.25+Math.random()*.6,w:.6+Math.random()*1.8});
+ drops.push({x:x,y:-20,v:3+Math.random()*5,l:30+Math.random()*90,a:.25+Math.random()*.6,w:.5+Math.random()*1.0});
 }
 function frame(){
  if(!running)return;
  mist++;
  ctx.globalCompositeOperation='source-over';
- ctx.fillStyle='rgba(5,5,5,.2)';ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='rgba(5,5,5,.3)';ctx.fillRect(0,0,W,H);
  ctx.globalCompositeOperation='lighter';
- var n=Math.min(14,2+Math.floor(mist/40));
+ var n=Math.min(6,2+Math.floor(mist/70));
  for(var i=0;i<n;i++)spawn();
  var floor=H*.8;
  for(i=drops.length-1;i>=0;i--){
   var d=drops[i];d.y+=d.v;
   var g=ctx.createLinearGradient(0,d.y-d.l,0,d.y);
-  g.addColorStop(0,'rgba(214,180,91,0)');g.addColorStop(1,'rgba(255,240,190,'+d.a+')');
+  g.addColorStop(0,'rgba(214,180,91,0)');g.addColorStop(1,'rgba(214,170,70,'+(d.a*.55)+')');
   ctx.strokeStyle=g;ctx.lineWidth=d.w;ctx.beginPath();ctx.moveTo(d.x,d.y-d.l);ctx.lineTo(d.x,d.y);ctx.stroke();
   if(d.y>floor){
    if(Math.random()<.35){ctx.fillStyle='rgba(244,223,155,'+(d.a*.5)+')';ctx.beginPath();ctx.arc(d.x+(Math.random()-.5)*40,floor-Math.random()*14,Math.random()*2+.5,0,6.3);ctx.fill()}
@@ -250,6 +269,23 @@ $('save').onclick=save;$('cancel').onclick=hideForm;
 $('showPass').onchange=function(){$('password').type=this.checked?'text':'password'};
 document.querySelectorAll('.cat').forEach(function(c){c.onclick=function(){toast(items.length?c.dataset.cat+': pronto podrás verlo aquí.':'Primero agrega una lista para ver '+c.dataset.cat+'.')}});
 render();
+
+/* ---------- Importación y reproducción M3U ---------- */
+var channels=[],video=$('iptvVideo'),activeHls=null;
+function setPlayStatus(s){$('playStatus').textContent=s}
+function parseM3U(text){
+ var lines=text.replace(/^\uFEFF/,'').split(/\r?\n/),out=[],meta=null;
+ lines.forEach(function(raw){var line=raw.trim();if(!line)return;
+  if(line.indexOf('#EXTINF')===0){var comma=line.lastIndexOf(',');var title=comma>=0?line.slice(comma+1).trim():'Canal sin nombre';var group=(line.match(/group-title="([^"]*)"/i)||[])[1]||'General';var logo=(line.match(/tvg-logo="([^"]*)"/i)||[])[1]||'';meta={title:title,group:group,logo:logo};}
+  else if(line.indexOf('#')!==0&&/^https?:\/\//i.test(line)){out.push({title:meta?meta.title:'Canal '+(out.length+1),group:meta?meta.group:'General',logo:meta?meta.logo:'',url:line});meta=null;}
+ });return out;
+}
+function showChannels(){var q=$('channelSearch').value.toLowerCase(),arr=channels.filter(function(c){return c.title.toLowerCase().indexOf(q)>=0||c.group.toLowerCase().indexOf(q)>=0});$('channelCount').textContent=arr.length+' canales mostrados de '+channels.length;var host=$('channelList');host.textContent='';arr.slice(0,400).forEach(function(c){var box=document.createElement('div');box.className='channelCard';var title=document.createElement('strong');title.textContent=c.title;var group=document.createElement('div');group.className='muted';group.textContent=c.group;var b=document.createElement('button');b.textContent='▶ Reproducir';b.onclick=function(){play(c)};box.append(title,group,b);host.append(box)});}
+function play(c){if(activeHls){activeHls.destroy();activeHls=null}video.pause();video.removeAttribute('src');video.load();$('playingName').textContent='Canal: '+c.title;var isHls=/\.m3u8?(?:$|[?#])/i.test(c.url);if(window.Hls&&Hls.isSupported()&&isHls){activeHls=new Hls({enableWorker:true});activeHls.loadSource(c.url);activeHls.attachMedia(video);activeHls.on(Hls.Events.MANIFEST_PARSED,function(){video.play().catch(function(){setPlayStatus('Pulsa reproducir en el control del video.')})});activeHls.on(Hls.Events.ERROR,function(ev,data){if(data&&data.fatal)setPlayStatus('El stream no pudo abrirse. Puede estar caído, bloqueado o requerir otro formato.');});}else{video.src=c.url;video.play().catch(function(){setPlayStatus('No inició automáticamente. Pulsa ▶ en el reproductor o prueba otro canal.')});}}
+function acceptM3U(txt,source){var parsed=parseM3U(txt);if(!parsed.length){setPlayStatus('No encontré canales M3U válidos. Revisa el archivo o la dirección.');return}channels=parsed;showChannels();setPlayStatus('Lista cargada desde '+source+': '+channels.length+' canales.');$('iptvPlayer').scrollIntoView({behavior:'smooth'});}
+$('m3uFile').onchange=function(){var f=this.files&&this.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(){acceptM3U(String(reader.result||''),f.name)};reader.onerror=function(){setPlayStatus('No se pudo leer el archivo seleccionado.')};reader.readAsText(f)};
+$('quickLoad').onclick=async function(){var url=$('quickUrl').value.trim();if(!/^https?:\/\//i.test(url)){setPlayStatus('Escribe una dirección http:// o https://');return}setPlayStatus('Descargando lista...');try{var res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);acceptM3U(await res.text(),'la dirección web')}catch(e){setPlayStatus('El servidor no permitió leer la lista desde la app (posible CORS o bloqueo). Descarga el archivo .m3u y ábrelo con “Abrir archivo M3U”. Detalle: '+e.message)}};
+$('channelSearch').addEventListener('input',showChannels);
 
 /* ---------- Control remoto (Google TV): flechas para moverse ---------- */
 document.addEventListener('keydown',function(e){
