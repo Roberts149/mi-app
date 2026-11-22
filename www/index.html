@@ -1,4 +1,3 @@
-t:null;if(!cur)
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,6 +10,12 @@ t:null;if(!cur)
 *{box-sizing:border-box}html,body{margin:0;background:#050505}
 body{background:radial-gradient(ellipse at top,#262012 0,#070707 55%);color:#f7f2e5;font:16px/1.4 "Trebuchet MS",Arial,sans-serif;min-height:100vh}
 .hidden{display:none!important}.muted{color:var(--mut);font-size:13px}
+.mas{width:clamp(120px,32vw,200px);height:auto;margin:0 auto 6px;display:block;opacity:0;animation:fd 1s .3s forwards,fl 3s 1.3s ease-in-out infinite;filter:drop-shadow(0 0 18px #d6b45b88)}
+@keyframes fl{50%{transform:translateY(-10px)}}
+.bk{transform-box:fill-box;transform-origin:center;animation:bk 4s 2s infinite}
+@keyframes bk{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.wv{transform-box:fill-box;transform-origin:100% 100%;animation:wv .9s 1.5s ease-in-out infinite alternate}
+@keyframes wv{from{transform:rotate(-12deg)}to{transform:rotate(20deg)}}
 #intro{position:fixed;inset:0;z-index:50;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;transition:opacity .9s,transform .9s}
 #intro.out{opacity:0;transform:scale(1.06);pointer-events:none}
 #fall{position:absolute;inset:0;width:100%;height:100%}
@@ -60,7 +65,16 @@ input,select{width:100%;background:#090909;border:1px solid #62512a;border-radiu
 <div id="intro">
 <canvas id="fall"></canvas>
 <button class="s skip" id="skip">Omitir</button>
-<div class="ib"><h1 class="logo">MRCASCADAS</h1>
+<div class="ib"><svg class="mas" viewBox="0 -20 200 240" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6d0"/><stop offset=".45" stop-color="#f4df9b"/><stop offset=".8" stop-color="#d6b45b"/><stop offset="1" stop-color="#a77c25"/></linearGradient></defs>
+<path d="M100 14L80-10M100 14L122-10" stroke="#d6b45b" stroke-width="4" stroke-linecap="round"/><circle cx="80" cy="-10" r="5" fill="#f4df9b"/><circle cx="122" cy="-10" r="5" fill="#f4df9b"/>
+<path class="wv" d="M34 150Q8 142 14 116" fill="none" stroke="#d6b45b" stroke-width="9" stroke-linecap="round"/>
+<path d="M166 150Q192 160 186 180" fill="none" stroke="#d6b45b" stroke-width="9" stroke-linecap="round"/>
+<path d="M100 14C100 14 30 90 30 140a70 70 0 0 0 140 0C170 90 100 14 100 14Z" fill="url(#gd)" stroke="#8a6420" stroke-width="4"/>
+<ellipse cx="68" cy="95" rx="9" ry="20" fill="#fff" opacity=".35" transform="rotate(25 68 95)"/>
+<g class="bk"><circle cx="75" cy="125" r="16" fill="#fff"/><circle cx="125" cy="125" r="16" fill="#fff"/><circle cx="78" cy="127" r="8" fill="#15110a"/><circle cx="122" cy="127" r="8" fill="#15110a"/><circle cx="81" cy="123" r="3" fill="#fff"/><circle cx="125" cy="123" r="3" fill="#fff"/></g>
+<circle cx="58" cy="152" r="9" fill="#e8a76a" opacity=".5"/><circle cx="142" cy="152" r="9" fill="#e8a76a" opacity=".5"/>
+<path d="M78 158Q100 184 122 158" fill="none" stroke="#15110a" stroke-width="5" stroke-linecap="round"/></svg>
+<h1 class="logo">MRCASCADAS</h1>
 <div class="logo" style="font-size:clamp(18px,4.5vw,40px);letter-spacing:.7em;margin-top:6px;animation-delay:1.3s,2.8s">IPTV</div>
 <p class="tag">TU TELEVISIÓN, A TU MANERA</p><button class="go" id="enter">ENTRAR</button></div>
 </div>
@@ -165,7 +179,8 @@ $('add').onclick=addForm;
 function boot(){history.replaceState({v:'home'},'');renderHome();show('home');var l=LS.getItem('mrc.last'),s=srcs.filter(function(x){return x.id===l})[0];
 if(!srcs.length)addForm();else if(s&&LS.getItem('mrc.auto')!=='0')openSource(s);else $('add').focus()}
 
-function addForm(){var s=sheet();s.innerHTML='<h3>Agregar lista</h3><select id="ft"><option value="x">Xtream Codes (usuario y contraseña)</option><option value="u">Lista M3U por enlace</option><option value="f">Lista M3U desde archivo</option></select><input id="fn" placeholder="Nombre (ej. Mi televisión)" maxlength="40"><div id="fx"><input id="fs" placeholder="Servidor: http://servidor:puerto" inputmode="url"><input id="fu" placeholder="Usuario" autocomplete="off"><input id="fp" type="password" placeholder="Contraseña"></div><input id="fl" class="hidden" placeholder="https://servidor/lista.m3u" inputmode="url"><input id="ff" class="hidden" type="file"><button id="fok" style="width:100%;margin-top:8px">Guardar y entrar</button><p id="fm" class="muted"></p>';
+function addForm(){var s=sheet();s.innerHTML='<h3>Agregar lista</h3><select id="ft"><option value="x">Xtream Codes (usuario y contraseña)</option><option value="u">Lista M3U por enlace</option><option value="f">Lista M3U desde archivo</option></select><input id="fn" placeholder="Nombre (ej. Mi televisión)" maxlength="40"><div id="fx"><input id="fs" placeholder="Servidor: http://servidor:puerto" inputmode="url"><input id="fu" placeholder="Usuario" autocomplete="off"><div class="row"><input id="fp" class="sp" type="password" placeholder="Contraseña"><button class="s" id="eye" type="button">👁</button></div></div><input id="fl" class="hidden" placeholder="https://servidor/lista.m3u" inputmode="url"><input id="ff" class="hidden" type="file"><button id="fok" style="width:100%;margin-top:8px">Guardar y entrar</button><p id="fm" class="muted"></p>';
+$('eye').onclick=function(){var p=$('fp');p.type=p.type==='password'?'text':'password'};
 $('ft').onchange=function(){var t=this.value;$('fx').classList.toggle('hidden',t!=='x');$('fl').classList.toggle('hidden',t!=='u');$('ff').classList.toggle('hidden',t!=='f')};
 $('fok').onclick=function(){var t=$('ft').value,s={id:'s'+Date.now(),name:$('fn').value.trim()||'Mi lista',type:t},m=$('fm');
 if(t==='x'){s.server=$('fs').value.trim().replace(/\/(player_api|get)\.php.*$/i,'').replace(/\/+$/,'');s.user=$('fu').value.trim();s.pass=$('fp').value;
@@ -208,18 +223,20 @@ xapi(S.src,'get_series_info','&series_id='+x.id).then(function(r){var e=r.episod
 Object.keys(e).sort(function(a,b){return a-b}).forEach(function(k){var t=document.createElement('h4');t.textContent='Temporada '+k;s.append(t);(e[k]||[]).forEach(function(p){var it={k:'e'+p.id,n:x.n+' · '+(p.title||('Episodio '+p.episode_num)),t:'series',id:p.id,e:p.container_extension,ep:1,l:x.l};all.push(it);var b=document.createElement('button');b.className='ep s';b.textContent=(p.episode_num||'')+'. '+(p.title||'Episodio');b.onclick=function(){hideSheet(function(){play(it,all)})};s.append(b)})});
 if(!all.length)m.textContent='Sin episodios disponibles.',s.append(m)}).catch(function(er){m.textContent='No se pudo cargar: '+er.message})}
 
-/* ---- Reproductor ---- */
-var P={list:[],i:0,h:null,tok:0,tm:0,ct:0};
+/* ---- Reproductor (búfer y reconexión) ---- */
+var P={list:[],i:0,h:null,tok:0,tm:0,ct:0,wt:0};
 function play(x,l){P.list=l&&l.length&&l.indexOf(x)>=0?l:[x];P.i=P.list.indexOf(x);go('player');start()}
 function msg(s){$('pm').textContent=s}
-function kill(){var v=$('vid');if(P.h){P.h.destroy();P.h=null}clearTimeout(P.tm);v.onerror=null;v.removeAttribute('src');try{v.load()}catch(e){}}
+function kill(){var v=$('vid');if(P.h){P.h.destroy();P.h=null}clearTimeout(P.tm);clearTimeout(P.wt);v.onerror=null;v.onwaiting=null;v.removeAttribute('src');try{v.load()}catch(e){}}
 function start(){var x=P.list[P.i];if(!x)return;var tok=++P.tok,v=$('vid'),u=urlOf(x),isH=/\.m3u8(\?|$)/i.test(u);$('pt').textContent=x.n;$('pf').textContent=isFav(x)?'★':'☆';kill();msg('Cargando…');
 var tr=isH?(v.canPlayType('application/vnd.apple.mpegurl')?['n','h']:['h','n']):['n'],ti=0;
 function nx(){if(tok!==P.tok)return;var m=tr[ti++];if(!m){v.onerror=null;msg('No se pudo reproducir. Prueba otro canal o revisa tu servicio.');return}
 kill();P.tm=setTimeout(nx,10000);v.onerror=nx;
-if(m==='h'){if(!window.Hls||!Hls.isSupported()){nx();return}P.h=new Hls();P.h.on(Hls.Events.ERROR,function(e,d){if(d&&d.fatal)nx()});P.h.loadSource(u);P.h.attachMedia(v)}else v.src=u;
+if(m==='h'){if(!window.Hls||!Hls.isSupported()){nx();return}var rt=0;P.h=new Hls({maxBufferLength:40,fragLoadingMaxRetry:6,levelLoadingMaxRetry:4});P.h.on(Hls.Events.ERROR,function(e,d){if(!d||!d.fatal)return;if(d.type===Hls.ErrorTypes.NETWORK_ERROR&&rt++<3){msg('Reconectando…');P.h.startLoad()}else if(d.type===Hls.ErrorTypes.MEDIA_ERROR&&rt++<3){P.h.recoverMediaError()}else nx()});P.h.loadSource(u);P.h.attachMedia(v)}else v.src=u;
 var p=v.play();if(p&&p.catch)p.catch(function(){})}
-v.onplaying=function(){if(tok===P.tok){clearTimeout(P.tm);msg('')}};nx();showCtl()}
+v.onplaying=function(){if(tok===P.tok){clearTimeout(P.tm);clearTimeout(P.wt);msg('')}};
+v.onwaiting=function(){if(tok!==P.tok)return;clearTimeout(P.wt);P.wt=setTimeout(function(){if(tok===P.tok&&v.readyState<3){msg('Reconectando…');start()}},12000)};
+nx();showCtl()}
 function nav(d){if(P.list.length<2)return;P.i=(P.i+d+P.list.length)%P.list.length;start()}
 function showCtl(){$('pl').classList.add('show');clearTimeout(P.ct);P.ct=setTimeout(function(){$('pl').classList.remove('show')},4000)}
 $('vid').onclick=function(){$('pl').classList.contains('show')?$('pl').classList.remove('show'):showCtl()};
