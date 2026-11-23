@@ -1,10 +1,9 @@
-
 #EXTM3U
-#EXTINF:-1 group-title="Películas de prueba",Big Buck Bunny
-https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4#/movie/
-#EXTINF:-1 group-title="Películas de prueba",Sintel
-https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4#/movie/
-#EXTINF:-1 group-title="Películas de prueba",Tears of Steel
-https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4#/movie/
-#EXTINF:-1 group-title="Películas de prueba",Elephants Dream
-https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4#/movie/
+#EXTINF:-1 group-title="Películas de prueba",Big Buck Bunny (MIT)
+https://mirrors.mit.edu/kodi/demo-files/BBB/bbb_sunflower_1080p_30fps_normal.mp4#/movie/
+#EXTINF:-1 group-title="Películas de prueba",Big Buck Bunny (Blender)
+https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4#/movie/
+#EXTINF:-1 group-title="Clips cortos",Clip Big Buck Bunny 10s
+https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4#/movie/
+#EXTINF:-1 group-title="Clips cortos",Clip Medusas 10s
+https://test-videos.co.uk/vids/jellyfish/mp4/h264/360/Jellyfish_360_10s_1MB.mp4#/movie/
