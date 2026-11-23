@@ -266,6 +266,6 @@ var r=cur.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,best=n
 all.forEach(function(n){if(n===cur)return;var q=n.getBoundingClientRect(),dx=q.left+q.width/2-cx,dy=q.top+q.height/2-cy,al=dx*dir[0]+dy*dir[1];if(al<=4)return;var sc=al+Math.abs(dir[0]?dy:dx)*2.2;if(sc<bs){bs=sc;best=n}});
 if(best){best.focus();best.scrollIntoView({block:'center',inline:'center'});e.preventDefault()}});
 })();
-</script><script src="extras.js"></script>
+</script><script src="extras.js"></script><script src="extras2.js"></script>
 </body>
 </html>
