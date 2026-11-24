@@ -4,6 +4,8 @@ function jget(k,d){try{var v=JSON.parse(LS.getItem(k));return v==null?d:v}catch(
 function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2600)}
 
 /* Audio y subtítulos */
+var CP=HTMLMediaElement.prototype.canPlayType;
+HTMLMediaElement.prototype.canPlayType=function(t){if(/mpegurl/i.test(String(t))&&LS.getItem('mrc.hlsjs')!=='0'&&window.Hls&&window.Hls.isSupported&&window.Hls.isSupported())return '';return CP.call(this,t)};
 var OH=window.Hls;
 if(OH){var W=function(cfg){var h=new OH(cfg);window.__xh=h;return h};Object.setPrototypeOf(W,OH);W.prototype=OH.prototype;window.Hls=W}
 function cur(){var h=window.__xh;return h&&h.media===$('vid')?h:null}
@@ -45,5 +47,7 @@ Storage.prototype.setItem=function(k,v){SI.call(this,k,v);if(k==='mrc.last'&&thi
 $('rf').addEventListener('click',function(){var id=LS.getItem('mrc.last');if(id)LS.setItem('mrc.upd.'+id,String(Date.now()))});
 var ad=$('add'),row=ad&&ad.parentNode;
 if(row){var tb=document.createElement('button'),lab=function(){tb.textContent='🔄 Auto-actualizar: '+(on()?'Sí':'No')};tb.className='s';lab();
-tb.onclick=function(){LS.setItem('mrc.autoupd',on()?'0':'1');lab();say(on()?'Las listas se actualizan solas cada 6 horas':'Actualización automática apagada')};row.appendChild(tb)}
+tb.onclick=function(){LS.setItem('mrc.autoupd',on()?'0':'1');lab();say(on()?'Las listas se actualizan solas cada 6 horas':'Actualización automática apagada')};row.appendChild(tb);
+var t2=document.createElement('button'),l2=function(){t2.textContent='🎚 Audio/subs avanzado: '+(LS.getItem('mrc.hlsjs')!=='0'?'Sí':'No')};t2.className='s';l2();
+t2.onclick=function(){LS.setItem('mrc.hlsjs',LS.getItem('mrc.hlsjs')!=='0'?'0':'1');l2();say('Se aplica al abrir el siguiente canal')};row.appendChild(t2)}
 })();
