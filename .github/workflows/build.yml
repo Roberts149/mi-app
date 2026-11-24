@@ -27,7 +27,7 @@ jobs:
         run: |
           pip install pillow
           python3 - <<'PY'
-          import os,glob,random
+          import os,glob,random,re
           from PIL import Image,ImageDraw,ImageFont
           R='android/app/src/main/res'
           def F(s):
@@ -35,12 +35,29 @@ jobs:
                   if os.path.exists(p): return ImageFont.truetype(p,s)
               return ImageFont.load_default()
           def art(S,bg=True):
-              im=Image.new('RGBA',(S,S),(5,5,5,255) if bg else (0,0,0,0)); d=ImageDraw.Draw(im); r=random.Random(7); c=S/2
-              for i in range(15):
-                  x=c+(i-7)*S*0.034; t=S*0.16+r.random()*S*0.05; b=S*(0.50+r.random()*0.16)
-                  d.line([(x,t),(x,b)],fill=(214,170,70,int(90+r.random()*140)),width=max(1,int(S*0.012)))
-              f=F(int(S*0.40)); w=d.textlength('M',font=f); d.text((c-w/2,S*0.40),'M',font=f,fill=(244,223,155,255))
-              return im
+              K=3; N=S*K
+              im=Image.new('RGBA',(N,N),(5,5,5,255) if bg else (0,0,0,0)); d=ImageDraw.Draw(im); r=random.Random(7)
+              gold=(244,208,110,255); gold2=(214,170,70,255); dark=(138,100,32,255)
+              def P(x,y): return (x*N,y*N)
+              def disc(x,y,q,fill): d.ellipse([(x-q)*N,(y-q)*N,(x+q)*N,(y+q)*N],fill=fill)
+              for i in range(13):
+                  x=(0.5+(i-6)*0.04)*N; t=r.random()*0.06*N; b=(0.30+r.random()*0.2)*N
+                  d.line([(x,t),(x,b)],fill=(214,170,70,int(70+r.random()*110)),width=max(1,int(N*0.008)))
+              w=max(2,int(N*0.02))
+              d.line([P(0.5,0.16),P(0.41,0.05)],fill=gold2,width=w); d.line([P(0.5,0.16),P(0.59,0.05)],fill=gold2,width=w)
+              disc(0.41,0.05,0.022,gold); disc(0.59,0.05,0.022,gold)
+              w=max(2,int(N*0.035))
+              d.line([P(0.27,0.64),P(0.13,0.50)],fill=gold2,width=w); disc(0.13,0.50,0.028,gold)
+              d.line([P(0.73,0.66),P(0.87,0.76)],fill=gold2,width=w); disc(0.87,0.76,0.028,gold)
+              lw=0.018
+              disc(0.5,0.60,0.26+lw,dark); d.polygon([P(0.5,0.14-lw*1.6),P(0.714+lw,0.4527),P(0.286-lw,0.4527)],fill=dark)
+              disc(0.5,0.60,0.26,gold); d.polygon([P(0.5,0.14),P(0.714,0.4527),P(0.286,0.4527)],fill=gold)
+              d.ellipse([P(0.36,0.40),P(0.43,0.52)],fill=(255,246,208,255))
+              for x in (0.40,0.60):
+                  disc(x,0.58,0.068,(255,255,255,255)); disc(x+0.012,0.585,0.034,(21,17,10,255)); disc(x+0.024,0.572,0.013,(255,255,255,255))
+              disc(0.29,0.65,0.035,(236,170,110,255)); disc(0.71,0.65,0.035,(236,170,110,255))
+              d.arc([P(0.40,0.60),P(0.60,0.78)],start=25,end=155,fill=(21,17,10,255),width=max(2,int(N*0.022)))
+              return im.resize((S,S),Image.LANCZOS)
           def circ(im):
               m=Image.new('L',im.size,0); ImageDraw.Draw(m).ellipse([0,0,im.size[0]-1,im.size[1]-1],fill=255); o=im.copy(); o.putalpha(m); return o
           for n,(a,b) in {'mdpi':(48,108),'hdpi':(72,162),'xhdpi':(96,216),'xxhdpi':(144,324),'xxxhdpi':(192,432)}.items():
@@ -59,6 +76,12 @@ jobs:
               w,h=Image.open(p).size; s=Image.new('RGB',(w,h),(5,5,5)); d=ImageDraw.Draw(s); f=F(max(14,w//12)); t='MRCASCADAS IPTV'; d.text(((w-d.textlength(t,font=f))/2,h/2-w//24),t,font=f,fill=(244,223,155)); s.save(p)
           m='android/app/src/main/AndroidManifest.xml'; x=open(m).read()
           if 'android:banner' not in x: open(m,'w').write(x.replace('<application','<application android:banner="@drawable/banner"',1))
+          sx=R+'/values/strings.xml'
+          if os.path.exists(sx):
+              s=open(sx).read()
+              s=re.sub(r'(<string name="app_name">)[^<]*(</string>)',r'\1MRCASCADAS IPTV\2',s)
+              s=re.sub(r'(<string name="title_activity_main">)[^<]*(</string>)',r'\1MRCASCADAS IPTV\2',s)
+              open(sx,'w').write(s)
           PY
       - run: npx cap sync android
       - name: Compilar
