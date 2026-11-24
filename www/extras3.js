@@ -59,4 +59,20 @@ if(row){var tb=document.createElement('button'),lab=function(){tb.textContent='�
 tb.onclick=function(){LS.setItem('mrc.autoupd',on()?'0':'1');lab();say(on()?'Las listas se actualizan solas cada 6 horas':'Actualización automática apagada')};row.appendChild(tb);
 var t2=document.createElement('button'),l2=function(){t2.textContent='🎚 Audio/subs avanzado: '+(LS.getItem('mrc.hlsjs')!=='0'?'Sí':'No')};t2.className='s';l2();
 t2.onclick=function(){LS.setItem('mrc.hlsjs',LS.getItem('mrc.hlsjs')!=='0'?'0':'1');l2();say('Se aplica al abrir el siguiente canal')};row.appendChild(t2)}
+})();(function(){
+var $=function(i){return document.getElementById(i)},LS=window.localStorage,v=$('vid');
+if(!v)return;
+function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2200)}
+var SZ=[['Pequeño',18],['Mediano',24],['Grande',32],['Extra grande',42]];
+var st=document.createElement('style');document.head.appendChild(st);
+function size(){var i=parseInt(LS.getItem('mrc.ssz')||'1',10);if(!(i>=0&&i<SZ.length))i=1;
+st.textContent='video::cue{font-size:'+SZ[i][1]+'px;color:#fff;background:rgba(0,0,0,.65);text-shadow:0 0 4px #000}';return i}
+size();
+function lift(){var c=this.activeCues;if(!c)return;for(var i=0;i<c.length;i++){try{c[i].snapToLines=true;c[i].line=-4}catch(e){}}}
+function hook(t){if(t.__xl)return;t.__xl=1;t.addEventListener('cuechange',lift)}
+for(var i=0;i<v.textTracks.length;i++)hook(v.textTracks[i]);
+v.textTracks.addEventListener('addtrack',function(e){hook(e.track)});
+var bar=document.querySelector('#pl .bar.b');
+if(bar){var b=document.createElement('button');b.className='s';b.textContent='Aa Tamaño';
+b.onclick=function(){var i=(size()+1)%SZ.length;LS.setItem('mrc.ssz',String(i));size();say('Subtítulos: '+SZ[i][0])};bar.appendChild(b)}
 })();
