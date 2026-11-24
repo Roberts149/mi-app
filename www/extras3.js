@@ -75,4 +75,33 @@ v.textTracks.addEventListener('addtrack',function(e){hook(e.track)});
 var bar=document.querySelector('#pl .bar.b');
 if(bar){var b=document.createElement('button');b.className='s';b.textContent='Aa Tamaño';
 b.onclick=function(){var i=(size()+1)%SZ.length;LS.setItem('mrc.ssz',String(i));size();say('Subtítulos: '+SZ[i][0])};bar.appendChild(b)}
+})();(function(){
+var $=function(i){return document.getElementById(i)},LS=window.localStorage;
+function jget(k,d){try{var v=JSON.parse(LS.getItem(k));return v==null?d:v}catch(e){return d}}
+function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2400)}
+
+/* Después de renombrar: reinicio sin intro y sin abrir la última lista */
+try{var pa=sessionStorage.getItem('xren');if(pa){sessionStorage.removeItem('xren');LS.setItem('mrc.auto','0');
+setTimeout(function(){var s=$('skip');if(s)s.click()},60);
+setTimeout(function(){LS.setItem('mrc.auto',pa);var c=$('auto');if(c)c.checked=pa!=='0'},4000)}}catch(e){}
+
+/* Renombrar listas */
+function rename(id,name){var e=$('xpin');if(e)e.remove();var o=document.createElement('div');o.id='xpin';
+o.innerHTML='<div class="sheet"><h3>Renombrar lista</h3><input id="xrn" maxlength="60" placeholder="Nuevo nombre"><button id="xrs" style="width:100%;margin-top:8px">Guardar</button></div>';
+o.onclick=function(ev){if(ev.target===o)o.remove()};document.body.appendChild(o);var inp=$('xrn');inp.value=name;inp.focus();
+$('xrs').onclick=function(){var n=inp.value.trim();if(!n){say('Escribe un nombre');return}
+var a=jget('mrc.s',[]);for(var i=0;i<a.length;i++)if(a[i].id===id)a[i].name=n.slice(0,60);
+try{LS.setItem('mrc.s',JSON.stringify(a));sessionStorage.setItem('xren',LS.getItem('mrc.auto')||'1')}catch(x){}
+say('Nombre guardado');setTimeout(function(){location.reload()},500)}}
+var sr=$('srcs');
+function decorate(){var a=jget('mrc.s',[]);[].forEach.call(sr.children,function(c,i){if(!c.classList.contains('src')||c.querySelector('.xren')||!a[i])return;
+var b=document.createElement('button'),id=a[i].id,nm=a[i].name;b.className='s xren';b.textContent='✏';b.onclick=function(){rename(id,nm)};c.appendChild(b)})}
+if(sr){new MutationObserver(decorate).observe(sr,{childList:true});decorate()}
+
+/* Restablecer idioma de audio y subtítulos */
+var ad=$('add'),row=ad&&ad.parentNode;
+function ln(c){try{return new Intl.DisplayNames(['es'],{type:'language'}).of(c)}catch(e){return c}}
+if(row){var lb=document.createElement('button'),lab=function(){var a=LS.getItem('mrc.alang'),s=LS.getItem('mrc.slang');
+lb.textContent='🌐 Idioma: '+(a||s?'audio '+(a?ln(a):'—')+' · subs '+(s==='off'?'apagados':(s?ln(s):'—')):'sin preferencia')};
+lb.className='s';lab();lb.onclick=function(){LS.removeItem('mrc.alang');LS.removeItem('mrc.slang');lab();say('Idioma restablecido')};row.appendChild(lb)}
 })();
