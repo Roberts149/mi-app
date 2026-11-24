@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:-1 group-title="Prueba audio y subtítulos",Apple Bip Bop (audios y subtítulos)
+https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8
+#EXTINF:-1 group-title="Prueba audio y subtítulos",Apple Bip Bop HEVC (audios y subtítulos)
+https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/master.m3u8
+#EXTINF:-1 group-title="Prueba audio y subtítulos",Angel One (varios audios)
+https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8
