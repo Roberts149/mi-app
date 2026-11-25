@@ -104,4 +104,55 @@ function ln(c){try{return new Intl.DisplayNames(['es'],{type:'language'}).of(c)}
 if(row){var lb=document.createElement('button'),lab=function(){var a=LS.getItem('mrc.alang'),s=LS.getItem('mrc.slang');
 lb.textContent='🌐 Idioma: '+(a||s?'audio '+(a?ln(a):'—')+' · subs '+(s==='off'?'apagados':(s?ln(s):'—')):'sin preferencia')};
 lb.className='s';lab();lb.onclick=function(){LS.removeItem('mrc.alang');LS.removeItem('mrc.slang');lab();say('Idioma restablecido')};row.appendChild(lb)}
+})();(function(){
+var $=function(i){return document.getElementById(i)},LS=window.localStorage,v=$('vid');
+if(!v)return;
+function jget(k,d){try{var x=JSON.parse(LS.getItem(k));return x==null?d:x}catch(e){return d}}
+function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2400)}
+function opt(k){return LS.getItem(k)!=='0'}
+var st=document.createElement('style');
+st.textContent='.card.xdead{display:none!important}.card.xwarn::before{content:"⚠";position:absolute;left:8px;top:4px;color:#e8a76a;z-index:2}';
+document.head.appendChild(st);
+
+/* Canales caídos: marcar, saltar y ocultar */
+function dk(){return 'mrc.dead.'+LS.getItem('mrc.last')}
+function dead(){return jget(dk(),[])}
+function setDead(a){try{LS.setItem(dk(),JSON.stringify(a.slice(-400)))}catch(e){}}
+function applyDead(){var hide=opt('mrc.hidedead'),a=dead();
+[].forEach.call($('grid').children,function(c){var s=c.querySelector('.cm span'),n=s?s.textContent.trim():'',d=a.indexOf(n)>=0;
+c.classList.toggle('xdead',d&&hide);c.classList.toggle('xwarn',d&&!hide)})}
+new MutationObserver(applyDead).observe($('grid'),{childList:true});
+var chain=0,pm=$('pm');
+new MutationObserver(function(){if((pm.textContent||'').indexOf('No se pudo reproducir')!==0)return;
+var name=($('pt').textContent||'').trim();
+setTimeout(function(){if(($('pt').textContent||'').trim()!==name)return;
+if(v.readyState>=2&&!v.paused&&v.currentTime>0)return;
+if(!/\.m3u8|\.ts(\?|$)/i.test(v.currentSrc||''))return;
+var a=dead();if(a.indexOf(name)<0){a.push(name);setDead(a)}applyDead();
+if(opt('mrc.autoskip')&&chain<5){chain++;say('Canal no disponible, probando el siguiente…');var b=$('pn');if(b)b.click()}},3500)
+}).observe(pm,{childList:true,characterData:true,subtree:true});
+v.addEventListener('playing',function(){chain=0;var n=($('pt').textContent||'').trim(),a=dead(),i=a.indexOf(n);if(i>=0){a.splice(i,1);setDead(a);applyDead()}});
+
+/* Siguiente episodio automático */
+v.addEventListener('ended',function(){if(!opt('mrc.autonext'))return;
+if(!/S\d+\s*E\d+|T\d+\s*E\d+|Cap[ií]tulo|Episod/i.test($('pt').textContent||''))return;
+say('Siguiente episodio…');setTimeout(function(){var b=$('pn');if(b)b.click()},1500)});
+
+/* Velocidad de reproducción */
+var bar=document.querySelector('#pl .bar.b'),SP=[1,1.25,1.5,2,0.75],si=0,sb=null;
+if(bar){sb=document.createElement('button');sb.className='s';sb.textContent='⏩ 1x';
+sb.onclick=function(){si=(si+1)%SP.length;v.playbackRate=SP[si];sb.textContent='⏩ '+SP[si]+'x';say('Velocidad '+SP[si]+'x')};bar.appendChild(sb)}
+new MutationObserver(function(){si=0;v.playbackRate=1;if(sb)sb.textContent='⏩ 1x'}).observe($('pt'),{childList:true,characterData:true,subtree:true});
+
+/* Ajustes de reproducción (inicio) */
+function sheetO(){var e=$('xpin');if(e)e.remove();
+var o=document.createElement('div'),s=document.createElement('div'),h=document.createElement('h3');o.id='xpin';s.className='sheet';h.textContent='Reproducción';s.appendChild(h);
+[['mrc.autoskip','Saltar al siguiente si un canal falla'],['mrc.hidedead','Ocultar canales caídos'],['mrc.autonext','Siguiente episodio automático']].forEach(function(r){
+var b=document.createElement('button'),lab=function(){b.textContent=r[1]+': '+(opt(r[0])?'Sí':'No')};b.className='ep s';lab();
+b.onclick=function(){LS.setItem(r[0],opt(r[0])?'0':'1');lab();applyDead()};s.appendChild(b)});
+var z=document.createElement('button');z.className='ep s';z.textContent='🧹 Olvidar canales caídos de esta lista';
+z.onclick=function(){setDead([]);applyDead();say('Lista de canales caídos vacía')};s.appendChild(z);
+o.appendChild(s);o.onclick=function(ev){if(ev.target===o)o.remove()};document.body.appendChild(o)}
+var ad=$('add'),row=ad&&ad.parentNode;
+if(row){var ob=document.createElement('button');ob.className='s';ob.textContent='⚙ Reproducción';ob.onclick=sheetO;row.appendChild(ob)}
 })();
