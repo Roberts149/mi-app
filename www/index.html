@@ -267,5 +267,38 @@ all.forEach(function(n){if(n===cur)return;var q=n.getBoundingClientRect(),dx=q.l
 if(best){best.focus();best.scrollIntoView({block:'center',inline:'center'});e.preventDefault()}});
 })();
 </script><script src="extras.js"></script><script src="extras2.js"></script><script src="extras3.js"></script>
-</body>
+<!-- Botones de Respaldo -->
+<div style="margin-top:20px;text-align:center;">
+    <button onclick="guardar()" style="background:#4CAF50;color:white;padding:10px;border:none;border-radius:5px;margin:5px;">💾 Guardar Lista</button>
+    <button onclick="restaurar()" style="background:#2196F3;color:white;padding:10px;border:none;border-radius:5px;margin:5px;">📂 Restaurar Lista</button>
+</div>
+
+<script>
+function guardar() {
+    // Ajusta 'playlistItems' si tu variable se llama diferente
+    let lista = window.playlistItems || []; 
+    if(lista.length == 0) alert("No hay canales para guardar");
+    
+    let texto = JSON.stringify(lista);
+    navigator.clipboard.writeText(texto).then(() => {
+        alert("✅ ¡Lista copiada! Ahora pégala donde quieras.");
+    }).catch(() => {
+        prompt("Copia esto manualmente:", texto);
+    });
+}
+
+function restaurar() {
+    let texto = prompt("Pega aquí el texto guardado:");
+    if(texto) {
+        try {
+            let nuevaLista = JSON.parse(texto);
+            window.playlistItems = nuevaLista;
+            alert("✅ ¡Lista restaurada! Recargando...");
+            location.reload();
+        } catch(e) {
+            alert("❌ Error al leer el texto.");
+        }
+    }
+}
+</script></body>
 </html>
