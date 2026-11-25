@@ -1,1 +1,37 @@
 
+<!-- Botones de Gestión -->
+<div style="margin-top: 20px; padding: 10px; text-align: center;">
+    <button onclick="guardarLista()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">💾 Guardar Lista</button>
+    <button onclick="restaurarLista()" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">📂 Restaurar Lista</button>
+</div>
+
+<script>
+// Función para GUARDAR
+function guardarLista() {
+    // Ajusta 'playlistItems' si tu lista tiene otro nombre en tu código
+    const items = window.playlistItems || []; 
+    const data = JSON.stringify(items, null, 2);
+    
+    navigator.clipboard.writeText(data).then(() => {
+        alert("✅ ¡Lista copiada al portapapeles!");
+    }).catch(err => {
+        prompt("Copia este texto manualmente:", data);
+    });
+}
+
+// Función para RESTAURAR
+function restaurarLista() {
+    const input = prompt("Pega aquí el texto guardado:");
+    if (input) {
+        try {
+            const list = JSON.parse(input);
+            // Actualiza tu variable global con la lista nueva
+            window.playlistItems = list; 
+            alert(`✅ ¡Se restauraron ${list.length} canales! Recargando...`);
+            location.reload();
+        } catch (e) {
+            alert("❌ Error: El texto no es válido.");
+        }
+    }
+}
+</script>
