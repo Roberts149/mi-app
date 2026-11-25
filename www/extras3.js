@@ -155,4 +155,23 @@ z.onclick=function(){setDead([]);applyDead();say('Lista de canales caídos vací
 o.appendChild(s);o.onclick=function(ev){if(ev.target===o)o.remove()};document.body.appendChild(o)}
 var ad=$('add'),row=ad&&ad.parentNode;
 if(row){var ob=document.createElement('button');ob.className='s';ob.textContent='⚙ Reproducción';ob.onclick=sheetO;row.appendChild(ob)}
+})();(function(){
+var $=function(i){return document.getElementById(i)},LS=window.localStorage;
+function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2800)}
+function keys(){var o={};for(var i=0;i<LS.length;i++){var k=LS.key(i);if(k&&k.indexOf('mrc.')===0&&!/^mrc\.(r|upd|dead)\./.test(k))o[k]=LS.getItem(k)}return o}
+async function gz(str){var cs=new CompressionStream('gzip'),w=cs.writable.getWriter();w.write(new TextEncoder().encode(str));w.close();
+var u=new Uint8Array(await new Response(cs.readable).arrayBuffer()),s='';for(var i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)}
+async function gunz(b){var s=atob(b),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);
+var ds=new DecompressionStream('gzip'),w=ds.writable.getWriter();w.write(u);w.close();return await new Response(ds.readable).text()}
+function patch(){var b1=$('xbc'),b2=$('xbr'),t=$('xbt');if(!b1||!b2||!t)return;
+b1.textContent='📋 Copiar mi copia (comprimida)';
+b1.onclick=async function(){try{var s='MRC1|'+await gz(JSON.stringify(keys()));t.value=s;t.select();
+try{await navigator.clipboard.writeText(s);say('Copia lista ('+s.length+' letras). Pégala en un lugar seguro')}catch(e){say('Mantén presionado el texto y copia')}}catch(e){say('No se pudo comprimir en este celular')}};
+b2.onclick=async function(){var raw=t.value,i=raw.indexOf('MRC1|'),o;
+try{if(i>=0)o=JSON.parse(await gunz(raw.slice(i+5).replace(/[^A-Za-z0-9+\/=]/g,'')));else o=JSON.parse(raw.trim())}
+catch(e){say('El texto no es una copia válida. Pega todas las partes del mensaje, en orden');return}
+var ks=Object.keys(o||{}).filter(function(k){return k.indexOf('mrc.')===0});if(!ks.length){say('No encontré datos en la copia');return}
+ks.forEach(function(k){try{LS.setItem(k,String(o[k]))}catch(e){}});say('Copia restaurada');setTimeout(function(){location.reload()},900)};
+var p=document.createElement('p');p.className='muted';p.textContent='La copia va comprimida y sin “recientes”, para que quepa en un mensaje. Si Telegram la parte en varios, copia cada parte y pégalas en orden.';b2.parentNode.appendChild(p)}
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){if(n.id==='xpin'&&n.querySelector&&n.querySelector('#xbt'))patch()})})}).observe(document.body,{childList:true});
 })();
