@@ -1,28 +1,33 @@
-<!-- Campo de Búsqueda -->
-<input type="text" id="busqueda" placeholder="Buscar canal..." style="width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--g); background: #15130e; color: white; border-radius: 5px;">
-<button onclick="buscarCanales()" style="padding: 10px; background: var(--g); color: white; border: none; border-radius: 5px;">🔍 Buscar</button> restaurarLista() {
-    const input = prompt("Pega aquí el texto guardado:");
-    if (input) {
-        try {
-            // Limpia espacios al inicio y final
-            let cleanInput = input.trim();
-            
-            // Reemplaza múltiples espacios por uno solo
-            cleanInput = cleanInput.replace(/\s+/g, ' ');
-            
-            // Intenta parsear
-            const list = JSON.parse(cleanInput);
-            
-            // Verifica que sea un array
-            if (!Array.isArray(list)) {
-                throw new Error("No es una lista válida");
+<script>
+    // --- FUNCIÓN RESTAURAR LISTA (CORREGIDA) ---
+    function restaurarLista() {
+        const input = prompt("Pega aquí el texto guardado:");
+        if (input) {
+            try {
+                // Limpia espacios al inicio y final
+                let cleanInput = input.trim();
+                
+                // Reemplaza múltiples espacios por uno solo
+                cleanInput = cleanInput.replace(/\s+/g, ' ');
+                
+                // Intenta parsear
+                const list = JSON.parse(cleanInput);
+                
+                // Verifica que sea un array
+                if (!Array.isArray(list)) {
+                    throw new Error("No es una lista válida");
+                }
+                
+                window.playlistItems = list;
+                alert(`✅ Restaurados ${list.length} canales.`);
+                location.reload();
+            } catch(e) {
+                alert("❌ Texto no válido. Asegúrate de copiar todo el bloque desde '{' hasta '}' sin dejar espacios sueltos.");
             }
-            
-            window.playlistItems = list;
-            alert(`✅ Restaurados ${list.length} canales.`);
-            location.reload();
-        } catch(e) {
-            alert("❌ Texto no válido. Asegúrate de copiar todo el bloque desde '{' hasta '}' sin dejar espacios sueltos.");
         }
     }
-}
+
+    // --- FUNCIÓN BUSCAR CANALES ---
+    function buscarCanales() {
+        const texto = document.getElementById('busqueda').value.toLowerCase();
+        // Asumimos que los canales tienen la clase 'canal-item' o similar.
