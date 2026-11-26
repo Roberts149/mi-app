@@ -1,4 +1,4 @@
-nono<!DOCTYPE html>
+yanono<!DOCTYPE html>
 <html lang="es">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <meta charset="UTF-8">
@@ -439,6 +439,30 @@ document.getElementById('pn').onclick = () => {
 document.getElementById('pn').onclick = () => {
     alert("Canal siguiente");
 };
-</script>
+<script>
+// --- Lógica de Navegación (Anterior / Siguiente) ---
+
+// 1. Variable global para saber qué canal se está viendo ahora
+let currentChannelIndex = -1; // Empieza en -1 para que el primero sea el 0
+
+// 2. Función para reproducir un canal por su índice
+function playChannelByIndex(index) {
+    const channels = window.playlistItems || [];
+    
+    // Si no hay canales, salir
+    if (channels.length === 0) return;
+
+    // Ajustar índices si nos pasamos o retrocedemos demasiado
+    if (index < 0) index = channels.length - 1;
+    if (index >= channels.length) index = 0;
+
+    currentChannelIndex = index;
+    const channel = channels[index];
+
+    // Obtener la URL (busca 'url', 'link' o 'src' dependiendo de cómo tengas tus datos)
+    // Asumimos que tus objetos tienen una propiedad 'url'. Si usas 'link', cambia 'channel.url' por 'channel.link'.
+    const url = channel.url || channel.link || channel.src;
+
+    if (url) {</script>
 </body>
 </html>
