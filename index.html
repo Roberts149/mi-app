@@ -1,4 +1,6 @@
-function restaurarLista() {
+<!-- Campo de Búsqueda -->
+<input type="text" id="busqueda" placeholder="Buscar canal..." style="width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--g); background: #15130e; color: white; border-radius: 5px;">
+<button onclick="buscarCanales()" style="padding: 10px; background: var(--g); color: white; border: none; border-radius: 5px;">🔍 Buscar</button> restaurarLista() {
     const input = prompt("Pega aquí el texto guardado:");
     if (input) {
         try {
