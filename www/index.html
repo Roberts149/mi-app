@@ -400,9 +400,40 @@ document.getElementById('pf').onclick = () => {
     alert("Guardado en favoritos (simulado)");
 };
 
-// Botones de anterior/siguiente (pp, pn) - Simulados
+// Variables globales para rastrear el índice del canal actual
+let currentChannelIndex = 0;
+const channels = window.playlistItems || [];
+
+// Función para reproducir un canal por índice
+function playChannelByIndex(index) {
+    if (index < 0) index = channels.length - 1;
+    if (index >= channels.length) index = 0;
+    
+    currentChannelIndex = index;
+    const channel = channels[index];
+    
+    // Asumiendo que cada canal tiene una propiedad 'url' o 'link'
+    // Si tu estructura es diferente, ajusta 'channel.url' a 'channel.link' o como sea
+    const url = channel.url || channel.link || channel.src;
+    
+    if (url) {
+        playChannel(url);
+    } else {
+        alert("Este canal no tiene URL válida.");
+    }
+}
+
+// Botón Anterior (pp)
 document.getElementById('pp').onclick = () => {
-    alert("Canal anterior");
+    currentChannelIndex--;
+    playChannelByIndex(currentChannelIndex);
+};
+
+// Botón Siguiente (pn)
+document.getElementById('pn').onclick = () => {
+    currentChannelIndex++;
+    playChannelByIndex(currentChannelIndex);
+};
 };
 
 document.getElementById('pn').onclick = () => {
