@@ -1,4 +1,4 @@
-no<!DOCTYPE html>
+nono<!DOCTYPE html>
 <html lang="es">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <meta charset="UTF-8">
@@ -360,7 +360,54 @@ document.getElementById('pz').onclick = () => {
     if (vid.requestFullscreen) vid.requestFullscreen();
 };
 
-// Asignar URLs a los canales (ajusta 'channel-btn' si tu clase es diferente)
+// Asignar URLs a los canales
 document.querySelectorAll('.channel-btn').forEach(btn => {
     btn.onclick = function() {
         const url = this.getAttribute('data-url');
+        if(url) {
+            document.getElementById('mainList').classList.add('hidden');
+            document.getElementById('vPlayer').classList.remove('hidden');
+            playChannel(url);
+        } else {
+            alert("Este canal no tiene URL asignada.");
+        }
+    };
+});
+
+// Botón de volver (px)
+document.getElementById('px').onclick = () => {
+    document.getElementById('vPlayer').classList.add('hidden');
+    document.getElementById('mainList').classList.remove('hidden');
+};
+
+// Botón de pausa/play (pq)
+document.getElementById('pq').onclick = () => {
+    if (vid.paused) vid.play();
+    else vid.pause();
+};
+
+// Botón de pantalla completa (pz)
+document.getElementById('pz').onclick = () => {
+    if (vid.requestFullscreen) {
+        vid.requestFullscreen();
+    } else if (vid.webkitRequestFullscreen) {
+        vid.webkitRequestFullscreen();
+    }
+};
+
+// Botón de favorito (pf) - Simulado
+document.getElementById('pf').onclick = () => {
+    alert("Guardado en favoritos (simulado)");
+};
+
+// Botones de anterior/siguiente (pp, pn) - Simulados
+document.getElementById('pp').onclick = () => {
+    alert("Canal anterior");
+};
+
+document.getElementById('pn').onclick = () => {
+    alert("Canal siguiente");
+};
+</script>
+</body>
+</html>
