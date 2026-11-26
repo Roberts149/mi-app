@@ -1,4 +1,4 @@
-<script>
+ya<script>
     // --- FUNCIÓN RESTAURAR LISTA (CORREGIDA) ---
     function restaurarLista() {
         const input = prompt("Pega aquí el texto guardado:");
@@ -52,6 +52,58 @@
     }
 
     // --- FUNCIÓN BUSCAR CANALES (COMPLETA) ---
+    function buscarCanales() {
+        const texto = document.getElementById('busqueda').value.toLowerCase();
+        const canales = document.querySelectorAll('.canal-item'); 
+        
+        canales.forEach(canal => {
+            const nombreElemento = canal.querySelector('.nombre-canal') || canal; 
+            const nombre = nombreElemento.innerText.toLowerCase();
+            
+            if (nombre.includes(texto)) {
+                canal.style.display = 'block';
+            } else {
+                canal.style.display = 'none';
+            }
+        });
+    }
+
+    // --- FUNCIÓN GUARDAR LISTA ORIGINAL ---
+    function guardarLista() {
+        const items = window.playlistItems || []; 
+        if(items.length === 0) return alert("La lista está vacía");
+        
+        const data = JSON.stringify(items, null, 2);
+        navigator.clipboard.writeText(data).then(() => {
+            alert("✅ ¡Lista copiada! Pégala en un bloc de notas.");
+        }).catch(() => {
+            prompt("Copia esto manualmente:", data);
+        });
+    }
+<script>
+    // --- FUNCIÓN RESTAURAR LISTA (CORREGIDA) ---
+    function restaurarLista() {
+        const input = prompt("Pega aquí el texto guardado:");
+        if (input) {
+            try {
+                let cleanInput = input.trim();
+                cleanInput = cleanInput.replace(/\s+/g, ' ');
+                const list = JSON.parse(cleanInput);
+                
+                if (!Array.isArray(list)) {
+                    throw new Error("No es una lista válida");
+                }
+                
+                window.playlistItems = list;
+                alert(`✅ Restaurados ${list.length} canales.`);
+                location.reload();
+            } catch(e) {
+                alert("❌ Texto no válido. Asegúrate de copiar todo el bloque desde '{' hasta '}' sin dejar espacios sueltos.");
+            }
+        }
+    }
+
+    // --- FUNCIÓN BUSCAR CANALES ---
     function buscarCanales() {
         const texto = document.getElementById('busqueda').value.toLowerCase();
         const canales = document.querySelectorAll('.canal-item'); 
