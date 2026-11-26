@@ -526,6 +526,95 @@ function playChannelByIndex(index) {
 
     // Inicializar búsqueda al escribir
     $('q').oninput = buscarCanales;
-</script>
+</<script>
+    // Función para cargar desde M3U
+    function loadM3U() {
+        fetch('canales.m3u') 
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split('\n');
+                let currentTitle = '';
+                
+                lines.forEach(line => {
+                    line = line.trim();
+                    
+                    // Buscar título
+                    if (line.startsWith('#')) {
+                        if (line.includes('tvg-name="') || line.includes('title="')) {
+                            const match = line.match(/tvg-name="([^"]+)"/) || line.match(/title="([^"]+)"/);
+                            if (match) currentTitle = match[1];
+                        }
+                    } 
+                    // Buscar URL
+                    else if (line.startsWith('http')) {
+                        createItem(currentTitle || 'Sin título', line);
+                        currentTitle = '';
+                    }
+                });
+            })
+            .catch(err => console.error('Error cargando M3U:', err));
+    }
+
+    // Función para crear el elemento HTML
+    function createItem(title, url) {
+        const div = document.createElement('div');
+        div.className = 'cm';
+        div.setAttribute('data-url', url);
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'n';
+        nameDiv.textContent = title;
+        
+        div.appendChild(nameDiv);
+        
+        // Evento de clic
+        div.onclick = function() {
+            playContent(url);
+        };
+        
+        document.getElementById('mainList').appendChild(div);
+    }
+
+    // Función de reproducción
+    function playContent(url) {
+        if (!url) return;
+        document.getElementById('mainList').style.display = 'none';
+        var player = document.getElementById('vPlayer');
+        player.style.display = 'block';
+        var video = document.getElementById('videoElement');
+        video.src = url;
+        video.play();
+        
+        document.getElementById('backBtn').onclick = function() {
+            video.pause();
+            video.src = '';
+            player.style.display = 'none';
+            document.getElementById('mainList').style.display = 'block';
+        };
+    }
+
+    // Función de búsqueda
+    function buscarCanales() {
+        var q = $('q').value.toLowerCase().trim();
+        var items = document.querySelectorAll('.cm');
+        var count = 0;
+        items.forEach(function(item) {
+            var name = item.querySelector('.n').textContent.toLowerCase();
+            if (q === '' || name.indexOf(q) !== -1) {
+                item.style.display = '';
+                count++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        $('r').textContent = count + ' resultados';
+    }
+
+    // Iniciar carga
+    loadM3U();
+    
+    // Iniciar búsqueda
+    $('q').oninput = buscarCanales;
+</script>>
 </body>
 </html>
