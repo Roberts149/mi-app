@@ -463,6 +463,69 @@ function playChannelByIndex(index) {
     // Asumimos que tus objetos tienen una propiedad 'url'. Si usas 'link', cambia 'channel.url' por 'channel.link'.
     const url = channel.url || channel.link || channel.src;
 
-    if (url) {</script>
+    if (url) {<script>
+    // Función para reproducir contenido
+    function playContent(url) {
+        if (!url) return;
+        
+        // Ocultar lista, mostrar reproductor
+        document.getElementById('mainList').style.display = 'none';
+        var player = document.getElementById('vPlayer');
+        player.style.display = 'block';
+        
+        // Cargar video
+        var video = document.getElementById('videoElement');
+        video.src = url;
+        video.play();
+        
+        // Botón volver
+        document.getElementById('backBtn').onclick = function() {
+            video.pause();
+            video.src = '';
+            player.style.display = 'none';
+            document.getElementById('mainList').style.display = 'block';
+        };
+    }
+
+    // Función de búsqueda corregida
+    function buscarCanales() {
+        var q = $('q').value.toLowerCase().trim();
+        var items = document.querySelectorAll('.cm');
+        var count = 0;
+        
+        items.forEach(function(item) {
+            var nameEl = item.querySelector('.n');
+            var catEl = item.querySelector('.c');
+            
+            var name = nameEl ? nameEl.textContent.toLowerCase() : '';
+            var cat = catEl ? catEl.textContent.toLowerCase() : '';
+            
+            if (q === '') {
+                item.style.display = '';
+                count++;
+            } else if (name.indexOf(q) !== -1 || cat.indexOf(q) !== -1) {
+                item.style.display = '';
+                count++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        $('r').textContent = count + ' resultados';
+    }
+
+    // Asignar eventos a todos los canales/películas
+    document.querySelectorAll('.cm').forEach(function(item) {
+        var url = item.getAttribute('data-url');
+        if (url) {
+            item.onclick = function() {
+                playContent(url);
+            };
+        }
+    });
+
+    // Inicializar búsqueda al escribir
+    $('q').oninput = buscarCanales;
+</script>
 </body>
 </html>
