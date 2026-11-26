@@ -327,3 +327,40 @@ function restaurarLista() {
     }
 }
 </html>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+const vid = document.getElementById('vid');
+let hls = null;
+
+function playChannel(url) {
+    if (hls) hls.destroy();
+    
+    if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(vid);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => vid.play());
+    } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
+        vid.src = url;
+        vid.play();
+    }
+}
+
+// Conectar botones
+document.getElementById('px').onclick = () => {
+    document.getElementById('vPlayer').classList.add('hidden');
+    document.getElementById('mainList').classList.remove('hidden');
+};
+
+document.getElementById('pq').onclick = () => {
+    if (vid.paused) vid.play(); else vid.pause();
+};
+
+document.getElementById('pz').onclick = () => {
+    if (vid.requestFullscreen) vid.requestFullscreen();
+};
+
+// Asignar URLs a los canales (ajusta 'channel-btn' si tu clase es diferente)
+document.querySelectorAll('.channel-btn').forEach(btn => {
+    btn.onclick = function() {
+        const url = this.getAttribute('data-url');
