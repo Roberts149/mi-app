@@ -68,4 +68,19 @@ function restaurarLista() {
         }
     }
 }
-</script>
+function restaurarLista() {
+    const input = prompt("Pega aquí el texto guardado:");
+    if (input) {
+        try {
+            // Limpia espacios al inicio y final, y reemplaza saltos de línea extraños
+            const cleanInput = input.trim().replace(/\s+/g, ' ');
+            const list = JSON.parse(cleanInput);
+            
+            window.playlistItems = list;
+            alert(`✅ Restaurados ${list.length} canales.`);
+            location.reload();
+        } catch(e) {
+            alert("❌ Error: Asegúrate de pegar todo el texto exactamente como lo copiaste.");
+        }
+    }
+}</script>
