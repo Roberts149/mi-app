@@ -1,4 +1,4 @@
-(function(){
+no(function(){
 var $=function(i){return document.getElementById(i)},LS=window.localStorage;
 function jget(k,d){try{var v=JSON.parse(LS.getItem(k));return v==null?d:v}catch(e){return d}}
 function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2600)}
@@ -183,7 +183,7 @@ b.onclick=function(){
 var v=document.getElementById('vid'),u=v.currentSrc||v.src;
 if(!/^https?:/i.test(u)){alert('Abre primero una película');return}
 document.getElementById('px').click();
-setTimeout(function(){location.href='vlc://'+u},600);
+setTimeout(function(){location.href=u},600);
 };
 t.style.flexWrap='wrap';
 document.querySelector('#pl .b').appendChild(b);
