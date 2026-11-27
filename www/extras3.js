@@ -185,5 +185,6 @@ if(!/^https?:/i.test(u)){alert('Abre primero una película');return}
 document.getElementById('px').click();
 setTimeout(function(){location.href='vlc://'+u},600);
 };
-t.appendChild(b);
+t.style.flexWrap='wrap';
+document.querySelector('#pl .b').appendChild(b);
 })();
