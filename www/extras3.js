@@ -1,4 +1,4 @@
-con(function(){
+(function(){
 var $=function(i){return document.getElementById(i)},LS=window.localStorage;
 function jget(k,d){try{var v=JSON.parse(LS.getItem(k));return v==null?d:v}catch(e){return d}}
 function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2600)}
