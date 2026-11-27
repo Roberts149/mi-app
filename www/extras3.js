@@ -1,4 +1,4 @@
-(function(){
+con(function(){
 var $=function(i){return document.getElementById(i)},LS=window.localStorage;
 function jget(k,d){try{var v=JSON.parse(LS.getItem(k));return v==null?d:v}catch(e){return d}}
 function say(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(say.k);say.k=setTimeout(function(){t.classList.remove('show')},2600)}
@@ -174,4 +174,16 @@ var ks=Object.keys(o||{}).filter(function(k){return k.indexOf('mrc.')===0});if(!
 ks.forEach(function(k){try{LS.setItem(k,String(o[k]))}catch(e){}});say('Copia restaurada');setTimeout(function(){location.reload()},900)};
 var p=document.createElement('p');p.className='muted';p.textContent='La copia va comprimida y sin “recientes”, para que quepa en un mensaje. Si Telegram la parte en varios, copia cada parte y pégalas en orden.';b2.parentNode.appendChild(p)}
 new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){if(n.id==='xpin'&&n.querySelector&&n.querySelector('#xbt'))patch()})})}).observe(document.body,{childList:true});
+})();;(function(){
+var t=document.querySelector('#pl .t');
+if(!t||document.getElementById('bvlc'))return;
+var b=document.createElement('button');
+b.id='bvlc';b.className='s';b.textContent='VLC ▶';
+b.onclick=function(){
+var v=document.getElementById('vid'),u=v.currentSrc||v.src;
+if(!/^https?:/i.test(u)){alert('Abre primero una película');return}
+document.getElementById('px').click();
+setTimeout(function(){location.href='vlc://'+u},600);
+};
+t.appendChild(b);
 })();
