@@ -183,7 +183,7 @@ b.onclick=function(){
 var v=document.getElementById('vid'),u=v.currentSrc||v.src;
 if(!/^https?:/i.test(u)){alert('Abre primero una película');return}
 document.getElementById('px').click();
-setTimeout(function(){location.href=u},600);
+setTimeout(function(){if(!window.MrcVlc||!MrcVlc.abrir(u))alert('No se pudo abrir VLC')},600);
 };
 t.style.flexWrap='wrap';
 document.querySelector('#pl .b').appendChild(b);
