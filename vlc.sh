@@ -19,16 +19,19 @@ public class MainActivity extends BridgeActivity {
       @JavascriptInterface
       public boolean abrir(String url) {
         try {
+          // En TV abre Just Player; en celular abre VLC
+          boolean tv = getPackageManager().hasSystemFeature("android.software.leanback");
+          String app = tv ? "com.brouken.player" : "org.videolan.vlc";
+          String nombre = tv ? "Just Player" : "VLC";
           Intent i = new Intent(Intent.ACTION_VIEW);
-          i.setPackage("org.videolan.vlc");
           i.setDataAndType(Uri.parse(url), "video/*");
-          i.setClassName("org.videolan.vlc", "org.videolan.vlc.gui.video.VideoPlayerActivity");
-          // Espera a que se libere la conexion antes de abrir VLC
+          i.setPackage(app);
+          // Espera a que se libere la conexion antes de abrir el reproductor
           new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
-              startActivityForResult(i, 42);
-            } catch (Exception directo) {
-              aviso("No se pudo abrir VLC: " + directo.getMessage());
+              startActivity(i);
+            } catch (Exception e) {
+              aviso("No se pudo abrir " + nombre + ". Revisa que este instalado.");
             }
           }, 2500);
           return true;
@@ -40,15 +43,7 @@ public class MainActivity extends BridgeActivity {
   }
 
   private void aviso(String texto) {
-    new android.app.AlertDialog.Builder(this).setTitle("Aviso de VLC").setMessage(texto).setPositiveButton("OK", null).show();
-  }
-
-  @Override
-  protected void onActivityResult(int req, int res, Intent data) {
-    super.onActivityResult(req, res, data);
-    if (req != 42) return;
-    long seg = data == null ? -1 : data.getLongExtra("extra_position", -1) / 1000;
-    aviso("Codigo: " + res + "  Segundos vistos: " + seg);
+    new android.app.AlertDialog.Builder(this).setTitle("Aviso").setMessage(texto).setPositiveButton("OK", null).show();
   }
 }
 EOF
