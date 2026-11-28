@@ -30,3 +30,9 @@ public class MainActivity extends BridgeActivity {
   }
 }
 EOF
+
+# Nuevo inicio
+W=android/app/src/main/assets/public
+cp inicio.js cascada.jpg "$W/"
+sed -i 's#<script src="extras3.js"></script>#&<script src="inicio.js"></script>#' "$W/index.html"
+grep -q 'inicio.js' "$W/index.html"
