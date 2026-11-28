@@ -20,7 +20,13 @@ public class MainActivity extends BridgeActivity {
           Intent i = new Intent(Intent.ACTION_VIEW);
           i.setPackage("org.videolan.vlc");
           i.setDataAndType(Uri.parse(url), "video/*");
-          startActivity(i);
+          i.setClassName("org.videolan.vlc", "org.videolan.vlc.gui.video.VideoPlayerActivity");
+          try {
+            startActivityForResult(i, 42);
+          } catch (Exception directo) {
+            i.setComponent(null);
+            startActivity(i);
+          }
           return true;
         } catch (Exception e) {
           return false;
