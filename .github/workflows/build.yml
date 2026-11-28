@@ -84,6 +84,7 @@ jobs:
               open(sx,'w').write(s)
           PY
       - run: npx cap sync android
+      - run: bash vlc.sh
       - name: Compilar
         run: |
           cd android
